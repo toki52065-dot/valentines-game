@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>💖 Valentine's Day Chef Adventure 💖</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    background: #ffe6f0;
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+    padding-top: 5%;
+    overflow-x: hidden;
+    position: relative;
+}
+.level-container {
+    text-align: center;
+    max-width: 90%;
+    width: 100%;
+    margin-bottom: 30px;
+}
+.hidden { display: none; }
+button, input {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+input { width: 80px; }
+.ingredientButton { margin: 5px; padding: 10px; font-size: 16px; }
+#heartsContainer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.heart { position: absolute; font-size: 24px; color: #ff4d94; animation: floatUp linear infinite; }
+@keyframes floatUp { 0% { transform: translateY(100%); opacity: 1; } 100% { transform: translateY(-50px); opacity: 0; } }
+@keyframes fadeBounce { 0% { opacity: 0; transform: translateY(-20px); } 50% { opacity: 1; transform: translateY(5px); } 70% { transform: translateY(-5px); } 100% { opacity: 1; transform: translateY(0); } }
+#finalMessage { animation: fadeBounce 1.2s ease-out; }
+@media (max-width: 768px) { button, input { font-size: 14px; padding: 8px; } .ingredientButton { font-size: 14px; padding: 8px; } .heart { font-size: 18px !important; } }
+</style>
+</head>
+<body><audio id="bgm" src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c6b9b3c3f.mp3" loop></audio>
+
+<div id="heartsContainer"></div><div id="intro" class="level-container">
+    <h2>💖 Welcome to the Valentine's Day Chef Adventure! 💖</h2>
+    <p>Get ready to play fun mini-games and make your way to a special Valentine's message! 🥰</p>
+    <button id="startGame">Start the Adventure!</button>
+</div><div id="level1" class="level-container hidden">
+    <p>Level 1: Guess the secret number (1-5)</p>
+    <input type="number" id="guessNumber" min="1" max="5">
+    <button id="guessBtn1" type="button">Guess</button>
+    <p id="level1Msg"></p>
+</div>
+<div id="level2" class="level-container hidden">
+    <p>Level 2: Catch the heart! 💘</p>
+    <button id="heartButton">💖</button>
+    <p id="level2Msg"></p>
+</div>
+<div id="level3" class="level-container hidden">
+    <p>Level 3: Make Beef Wellington! Click the ingredients in the correct order 🥩🧈🧄🍄🥓🥧🥚</p>
+    <div id="ingredientContainer"></div>
+    <p id="level3Msg"></p>
+</div>
+<div id="level4" class="level-container hidden">
+    <p>Who makes the most delicious food ever and heals your soul?</p>
+    <input type="text" id="guessWord">
+    <button id="guessBtn4" type="button">Guess</button>
+    <p id="level4Msg"></p>
+</div>
+<div id="finalMessage" class="level-container hidden">
+    <h2>✨ We made it to Valentine’s Day! ✨</h2>
+    <p>Hey… hehe 😳 I’m kind of shy, but I just wanted to say I really, really enjoy talking with you ❤️</p>
+    <p>From 1 AM to 5 AM, chatting on audio calls, laughing at silly jokes, and playing games together — it honestly makes my heart happy 😄</p>
+    <p>Even though we’ve just started talking this week, every little moment with you already feels so special 💕</p>
+    <p>I might be shy, but I hope we can keep having fun like this and maybe make more late-night memories together 😅💖</p>
+    <p>Selamat Hari Valentine, Oreo! 🌹💖</p>
+</div><script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    document.body.addEventListener('click', () => {
+        const bgm = document.getElementById('bgm');
+        if (bgm.paused) { bgm.volume = 0.3; bgm.play(); }
+    }, { once: true });
+
+    document.getElementById('startGame').addEventListener('click', () => {
+        document.getElementById('intro').classList.add('hidden');
+        document.getElementById('level1').classList.remove('hidden');
+    });
+
+    const heartsContainer = document.getElementById('heartsContainer');
+    function createHeart() {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = '💖';
+        heart.style.left = Math.random() * window.innerWidth + 'px';
+        heart.style.fontSize = (20 + Math.random() * 30) + 'px';
+        heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+        heartsContainer.appendChild(heart);
+        setTimeout(() => heartsContainer.removeChild(heart), 10000);
+    }
+    setInterval(createHeart, 500);
+
+    let level1Number = Math.floor(Math.random() * 5) + 1;
+    document.getElementById('guessBtn1').addEventListener('click', () => {
+        const guess = Number(document.getElementById('guessNumber').value.trim());
+        const msg = document.getElementById('level1Msg');
+        if(isNaN(guess)) { msg.textContent = 'Please enter a valid number!'; return; }
+        if(guess === level1Number){
+            msg.textContent = 'Correct! You passed Level 1 💕';
+            document.getElementById('level1').classList.add('hidden');
+            document.getElementById('level2').classList.remove('hidden');
+            initLevel2();
+        } else if(guess < level1Number){
+            msg.textContent = 'Higher 💡';
+        } else { msg.textContent = 'Lower 💡'; }
+    });
+
+    function initLevel2(){
+        const heartButton = document.getElementById('heartButton');
+        const level2Msg = document.getElementById('level2Msg');
+        let heartClickCount = 0, heartMaxClicks = 50, heartSize = 70;
+        function moveHeart(){
+            heartButton.style.position='absolute';
+            heartButton.style.top=(50+Math.random()*150)+'px';
+            heartButton.style.left=Math.random()*(window.innerWidth-heartSize)+'px';
+        }
+        heartButton.style.fontSize = heartSize+'px';
+        moveHeart();
+        heartButton.addEventListener('click',()=>{
+            heartClickCount++;
+            heartSize = Math.max(15, 70-heartClickCount);
+            heartButton.style.fontSize=heartSize+'px';
+            moveHeart();
+            if(heartClickCount>=heartMaxClicks){
+                level2Msg.textContent='You caught the heart! 💘';
+                setTimeout(()=>{
+                    document.getElementById('level2').classList.add('hidden');
+                    document.getElementById('level3').classList.remove('hidden');
+                    initLevel3();
+                },500);
+            }
+        });
+    }
+
+    const ingredientList=['🥩 Beef tenderloin','🧈 Butter','🧄 Garlic','🍄 Mushrooms','🥓 Prosciutto','🥧 Puff pastry','🥚 Egg wash'];
+    let currentIngredientIndex=0;
+    function shuffleArray(array){ for(let i=array.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [array[i],array[j]]=[array[j],array[i]]; } return array; }
+    function initLevel3(){
+        currentIngredientIndex=0;
+        const container=document.getElementById('ingredientContainer'); container.innerHTML='';
+        const shuffled=shuffleArray([...ingredientList]);
+        shuffled.forEach((ingredient)=>{
+            const btn=document.createElement('button'); btn.textContent=ingredient; btn.className='ingredientButton'; btn.type='button';
+            btn.addEventListener('click',()=>{
+                if(ingredient===ingredientList[currentIngredientIndex]){
+                    btn.style.backgroundColor='green'; btn.disabled=true; currentIngredientIndex++;
+                    if(currentIngredientIndex===ingredientList.length){
+                        document.getElementById('level3Msg').textContent='Beef Wellington completed! 🍳';
+                        setTimeout(()=>{
+                            document.getElementById('level3').classList.add('hidden');
+                            document.getElementById('level4').classList.remove('hidden');
+                        },500);
+                    }
+                } else { btn.style.backgroundColor='red'; }
+            });
+            container.appendChild(btn);
+        });
+    }
+
+    const secretWords=['grandma','Grandma','grandmother','Grandmother'];
+    document.getElementById('guessBtn4').addEventListener('click',()=>{
+        const guess=document.getElementById('guessWord').value.trim();
+        const msg=document.getElementById('level4Msg');
+        if(secretWords.includes(guess)){
+            msg.textContent='Correct! 🍳 The best cooking in the world comes from Grandma!';
+            document.getElementById('level4').classList.add('hidden');
+            document.getElementById('finalMessage').classList.remove('hidden');
+        } else { msg.textContent='Not quite! Try again 💔'; }
+    });
+});
+</script></body>
+</html>
